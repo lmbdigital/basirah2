@@ -24,6 +24,7 @@ import { auth, db } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { ArrowLeft } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface HistoryEntry {
   id: string;
@@ -36,6 +37,7 @@ interface HistoryEntry {
 const BrandDashboard = ({ brandName }: { brandName: string }) => {
   const router = useRouter();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [timeRange, setTimeRange] = useState<'1 Week' | '1 Month' | '6 Month' | 'YTD' | '1 Year' | '5 Year' | 'Max'>('1 Month');
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -57,12 +59,45 @@ const BrandDashboard = ({ brandName }: { brandName: string }) => {
     fetchHistory();
   }, [brandName]);
 
-  const overallScoreData = history.map(entry => ({
+  const filterHistoryByTimeRange = (history: HistoryEntry[]) => {
+    const now = new Date();
+    let startDate: Date;
+
+    switch (timeRange) {
+      case '1 Week':
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case '1 Month':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        break;
+      case '6 Month':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+        break;
+      case 'YTD':
+        startDate = new Date(now.getFullYear(), 0, 1);
+        break;
+      case '1 Year':
+        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        break;
+      case '5 Year':
+        startDate = new Date(now.getFullYear() - 5, now.getMonth(), now.getDate());
+        break;
+      case 'Max':
+      default:
+        return history;
+    }
+
+    return history.filter(entry => new Date(entry.date) >= startDate);
+  };
+
+  const filteredHistory = filterHistoryByTimeRange(history);
+
+  const overallScoreData = filteredHistory.map(entry => ({
     date: formatDate(entry.date),
     score: entry.scores.overall,
   }));
 
-  const categoryScoreData = history.map(entry => {
+  const categoryScoreData = filteredHistory.map(entry => {
     const categoryData: Record<string, number> = {};
     Object.keys(entry.scores).forEach(key => {
       if (key !== 'overall') {
@@ -75,7 +110,7 @@ const BrandDashboard = ({ brandName }: { brandName: string }) => {
     };
   });
 
-  const metricTrendData = history.map(entry => {
+  const metricTrendData = filteredHistory.map(entry => {
     const metricData: Record<string, string> = {};
     Object.keys(entry.metrics).forEach(key => {
       metricData[key] = entry.metrics[key];
@@ -170,6 +205,25 @@ const BrandDashboard = ({ brandName }: { brandName: string }) => {
         Back to Overview
       </Button>
 
+      <div className="flex justify-end mb-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              Time Range: {timeRange}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setTimeRange('1 Week')}>1 Week</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('1 Month')}>1 Month</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('6 Month')}>6 Month</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('YTD')}>YTD</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('1 Year')}>1 Year</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('5 Year')}>5 Year</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('Max')}>Max</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Overall Score Trend for {brandName}</CardTitle>
@@ -252,3 +306,4 @@ const BrandDashboard = ({ brandName }: { brandName: string }) => {
 };
 
 export default BrandDashboard;
+
