@@ -772,10 +772,6 @@
             </Card>
           )}
           
-            <CardHeader>
-              <CardTitle>© Faizan Rashid Bhat 2025</CardTitle>
-            </CardHeader>
-          
         </div>
         
         {/* Delete Confirmation Dialog */}

@@ -680,6 +680,9 @@ video {
 .mb-2 {
   margin-bottom: 0.5rem;
 }
+.mb-4 {
+  margin-bottom: 1rem;
+}
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -706,9 +709,6 @@ video {
 }
 .mt-8 {
   margin-top: 2rem;
-}
-.mb-4 {
-  margin-bottom: 1rem;
 }
 .flex {
   display: flex;

@@ -7,6 +7,13 @@
     import { auth } from '@/lib/firebase';
     import { onAuthStateChanged } from 'firebase/auth';
     import BrandsOverview from '@/components/BrandsOverview';
+		import {
+		      Card,
+		      CardContent,
+		      CardDescription,
+		      CardHeader,
+		      CardTitle,
+		    } from "@/components/ui/card";
 
     export default function Home() {
       const [user, setUser] = useState<any>(null);
@@ -33,8 +40,11 @@
         <main className="container mx-auto py-8">
           {user ? (
             <>
-              <BrandsOverview />
               <BrandStrategyCalculator />
+              <BrandsOverview />
+							<CardHeader>
+	              <CardTitle>© Faizan Rashid Bhat 2025</CardTitle>
+	            </CardHeader>
             </>
           ) : (
             <Login onLogin={handleLogin} />
