@@ -41,10 +41,14 @@
           {user ? (
             <>
               <BrandStrategyCalculator />
-              <BrandsOverview />
-							<CardHeader>
-	              <CardTitle>© Faizan Rashid Bhat 2025</CardTitle>
-	            </CardHeader>
+              <div className="w-full max-w-6xl mx-auto space-y-8 p-4">
+								<BrandsOverview />
+							</div>
+							<div className="w-full max-w-6xl mx-auto space-y-8 p-4">
+								<CardHeader>
+		              <CardTitle>© Faizan Rashid Bhat 2025</CardTitle>
+		            </CardHeader>
+							</div>
             </>
           ) : (
             <Login onLogin={handleLogin} />
